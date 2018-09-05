@@ -17,20 +17,21 @@ class FormData {
   }
   request () {
     let inputs = this.inputs
-    let len = inputs.lenght
+    let len = inputs.length
     let errors = {}
     let err
     let input
     for (var i = 0; i < len; i++) {
       input = inputs[i]
-      err = input.validation()
+      err = typeof input.validation === 'function' && input.validation()
       if (err) errors[input.name] = err
     }
-    console.log('123')
-    console.log(JSON.stringify({ name: 1 }))
     return new Promise((resolve, reject) => {
-      resolve(errors)
-      // reject()
+      if (JSON.stringify(errors) === '{}') {
+        reject(errors)
+      } else {
+        resolve()
+      }
     })
   }
 }
@@ -65,10 +66,13 @@ export default {
     }
   },
   mounted: function () {
-    console.log('1234')
     var form = new FormData()
     form.add(new UserNameData())
-    form.request().then(() => { })
+    form.request().then(res => {
+      console.log(res)
+    }).catch(error => {
+      console.log(error)
+    })
   }
 }
 </script>
